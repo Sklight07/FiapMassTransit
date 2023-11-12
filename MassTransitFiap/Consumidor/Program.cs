@@ -6,34 +6,21 @@ IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((hostContext, services) =>
     {
         var configuration = hostContext.Configuration;
-        var servidor = configuration.GetSection("MassTransit")["Servidor"] ?? string.Empty;
-        var usuario = configuration.GetSection("MassTransit")["Usuario"] ?? string.Empty;
-        var senha = configuration.GetSection("MassTransit")["Senha"] ?? string.Empty;
-        var fila = configuration.GetSection("MassTransit")["NomeFila"] ?? string.Empty;
+        var conexao = configuration.GetSection("MassTransitAzure")["Conexao"] ?? string.Empty;
+        var fila = configuration.GetSection("MassTransitAzure")["NomeFila"] ?? string.Empty;
         services.AddHostedService<Worker>();
 
-        services.AddMassTransit(x =>
+        _ = services.AddMassTransit(x =>
         {
-            x.UsingRabbitMq((context, cfg) =>
+            x.UsingAzureServiceBus((context, cfg) =>
             {
-                cfg.Host(servidor, "/", h =>
-                {
-                    h.Username(usuario);
-                    h.Password(senha);
-                });
-
+                cfg.Host(conexao);
                 cfg.ReceiveEndpoint(fila, e =>
                 {
-                    e.Consumer<PedidoCriadoConsumidor>(context);
+                    e.Consumer<PedidoCriadoConsumidor>();
+                    //e.UseRetry(r => r.Immediate(5)); // caso de um problema ao tentar consumir a mensagem, tenta novamente 5 vezes
                 });
-
-                //se precisar criar outro consumidor, basta adicionar aqui e criar a classe
-
-                cfg.ConfigureEndpoints(context);
             });
-
-            x.AddConsumer<PedidoCriadoConsumidor>();
-            //se precisar criar outro consumidor, basta adicionar aqui e criar a classe
         });
     })
     .Build();

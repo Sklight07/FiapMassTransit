@@ -1,9 +1,9 @@
 /MassTransit/Consumidor/bin/Debug/net7.0
-/MassTransit/Consumidor/obj
+/MassTransit/Consumidor/obj/
 /MassTransit/Core/bin/Debug/net7.0
-/MassTransit/Core/obj
+/MassTransit/Core/obj/
 /MassTransit/Produtor/bin/Debug/net7.0
-/MassTransit/Produtor/obj
+/MassTransit/Produtor/obj/
 /MassTransit/.vs
 .vs
 /.vscode
