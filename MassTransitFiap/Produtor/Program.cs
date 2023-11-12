@@ -1,3 +1,4 @@
+using Core;
 using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,7 @@ builder.Services.AddMassTransit(x =>
     x.UsingAzureServiceBus((context, cfg) =>
     {
         cfg.Host(servidor);
+        cfg.Message<Pedido>(x => x.SetEntityName("topico"));//dessa maneira mudamos para um topico e não uma fila, no caso demos o nome de 'topico'. O ideal é colocar no appsettings.json
     });
 });
 

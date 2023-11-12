@@ -10,15 +10,14 @@ IHost host = Host.CreateDefaultBuilder(args)
         var fila = configuration.GetSection("MassTransitAzure")["NomeFila"] ?? string.Empty;
         services.AddHostedService<Worker>();
 
-        _ = services.AddMassTransit(x =>
+        services.AddMassTransit(x =>
         {
             x.UsingAzureServiceBus((context, cfg) =>
             {
                 cfg.Host(conexao);
-                cfg.ReceiveEndpoint(fila, e =>
+                cfg.SubscriptionEndpoint("sub-1", "topico", e =>
                 {
                     e.Consumer<PedidoCriadoConsumidor>();
-                    //e.UseRetry(r => r.Immediate(5)); // caso de um problema ao tentar consumir a mensagem, tenta novamente 5 vezes
                 });
             });
         });
